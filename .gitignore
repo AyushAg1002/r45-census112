@@ -1,0 +1,19 @@
+# Local build and verification products
+/build/
+/output/
+/release/
+/tmp/
+/tools/
+/third_party/
+/.venv/
+/__pycache__/
+*.pyc
+*.log
+
+# Downloaded third-party inputs and large generated intermediates
+/data/r45extreme.tar.gz
+/data/r4522.112.deletions.all.g6
+/data/r4522.112.nonsaturated.g6
+
+# Operating-system metadata
+.DS_Store

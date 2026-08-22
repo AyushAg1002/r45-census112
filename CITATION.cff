@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use this catalogue or software, please cite the accompanying preprint and the versioned Zenodo record."
+title: "Non-K4-saturated Ramsey (4,5,22) graphs with 112 edges"
+type: dataset
+authors:
+  - family-names: Agarwal
+    given-names: Ayush
+    affiliation: Independent Researcher
+    email: ayushag1002@gmail.com
+version: 1.0.0
+date-released: 2026-08-22
+doi: 10.5281/zenodo.22057247
+url: "https://github.com/AyushAg1002/r45-census112"
+keywords:
+  - Ramsey theory
+  - graph enumeration
+  - computational combinatorics
+  - nauty
+  - SAT
+preferred-citation:
+  type: article
+  title: "An exact census of non-K4-saturated Ramsey (4,5,22) graphs with 112 edges"
+  authors:
+    - family-names: Agarwal
+      given-names: Ayush
+      affiliation: Independent Researcher
+  year: 2026

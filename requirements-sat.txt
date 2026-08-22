@@ -1,0 +1,2 @@
+# Optional dependency for regenerating the SAT witness and running every test.
+python-sat==1.9.dev15
