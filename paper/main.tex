@@ -1,0 +1,543 @@
+\documentclass[10pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+
+\hypersetup{
+  pdftitle={An exact census of non-K4-saturated Ramsey (4,5,22) graphs with 112 edges},
+  pdfauthor={Ayush Agarwal},
+  pdfsubject={Computer-assisted extremal graph enumeration},
+  pdfkeywords={Ramsey graph, graph census, saturated graph, canonical labeling, computer-assisted proof}
+}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\Rcal}{\mathcal{R}}
+\newcommand{\Xcal}{\mathcal{X}}
+\newcommand{\sha}{\textsc{sha-256}}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{Non-$K_4$-saturated Ramsey $(4,5,22)$ graphs}
+\fancyhead[R]{Ayush Agarwal}
+\fancyfoot[C]{\thepage}
+\setlength{\headheight}{14pt}
+
+\title{An exact census of non-$K_4$-saturated Ramsey $(4,5,22)$ graphs with $112$ edges}
+\author{Ayush Agarwal\\[2pt]
+\small Independent Researcher, Bangalore, India\\
+\small \href{mailto:ayushag1002@gmail.com}{ayushag1002@gmail.com}}
+\date{August 22, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Angeltveit and McKay determined the $30{,}976$ Ramsey $(4,5,22)$ graphs
+with $113$ edges.  We use their complete catalogue to determine the entire
+non-$K_4$-saturated part of the next layer.  Up to isomorphism, exactly
+$785{,}888$ Ramsey $(4,5,22)$ graphs with $112$ edges are not
+$K_4$-saturated.  Two separately implemented deletion-and-filter programs
+emit the same $887{,}138$ valid deletion records byte-for-byte.
+The nauty and Traces canonical-labeling algorithms give the same class count,
+and nauty recanonicalization makes the catalogues byte-identical.  A
+standard-library checker validates every representative.  We also prove
+computationally that every Ramsey $(4,5,22)$ graph with $112$ edges has
+minimum degree at least $7$, by exhausting one-vertex extensions from the
+complete $106$- and $107$-edge catalogues at order $21$.  A directly audited
+$K_4$-saturated example shows that the complete layer has at least
+$785{,}889$ classes; its saturated residue remains uncensused.
+\end{abstract}
+
+\noindent\textbf{Keywords:} Ramsey graph; graph census; saturated graph;
+canonical labeling; computer-assisted proof.\\
+\textbf{MSC 2020:} 05C55 (primary); 05C30, 05C35 (secondary).
+
+\section{Introduction}
+
+For positive integers $s,t,n,e$, let $\Rcal(s,t,n,e)$ denote the set of
+isomorphism classes of graphs on $n$ vertices and $e$ edges that contain
+neither a clique of order $s$ nor an independent set of order $t$.  We omit
+$e$ when no edge count is prescribed.  The classical equality
+$R(4,5)=25$ means that $\Rcal(4,5,24)$ is nonempty but
+$\Rcal(4,5,25)$ is empty \cite{mckay-radziszowski-1995}.
+
+High-edge portions of $\Rcal(4,5,n)$ are important local inputs in current
+work on the diagonal Ramsey number $R(5,5)$.  Angeltveit and McKay recently
+proved $R(5,5)\leq 46$ \cite{angeltveit-mckay-2026}.  As part of that work
+they completed the high-edge catalogues at orders $21$, $22$, and $23$.
+In particular,
+\[
+ |\Rcal(4,5,22,114)|=133,
+ \qquad
+ |\Rcal(4,5,22,113)|=30{,}976.
+\]
+Their published table estimates that the unrestricted order-$22$ class has
+roughly $1.8\times 10^{15}$ members, making an unstructured census of the
+next edge layer unattractive.
+
+This paper isolates a sector of the $112$-edge layer that is exactly
+recoverable from the existing $113$-edge catalogue.  A $K_4$-free graph is
+\emph{$K_4$-saturated} when adding any nonedge creates a $K_4$.  Define
+\[
+ \Xcal_{112}
+ =\{G\in\Rcal(4,5,22,112):G\text{ is not }K_4\text{-saturated}\}.
+\]
+Our main computational result is
+\[
+ \boxed{|\Xcal_{112}|=785{,}888.}
+\]
+The qualifier ``not $K_4$-saturated'' is essential: we also construct and
+audit a saturated graph in the same edge layer.
+
+\begin{samepage}
+The contributions are as follows.
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+  \item We prove an elementary edge-deletion correspondence and use it to
+  exhaust $\Xcal_{112}$ from the complete $113$-edge input catalogue.
+  \item We reproduce the exhaustive deletion and Ramsey filtering with a
+  separate implementation, cross-check canonical labeling with nauty and
+  Traces, validate all $785{,}888$ representatives with a standard-library
+  checker, and repeat the method one edge higher as a regression test.
+  \item We exclude minimum degrees $5$ and $6$ in the full $112$-edge layer
+  using two structurally different exhaustive extension programs.
+  \item We give a deterministic SAT encoding and an audited witness proving
+  that the remaining saturated sector is nonempty.
+\end{enumerate}
+\end{samepage}
+
+The result does not improve the numerical upper bound on $R(5,5)$.  It is a
+reproducible local-catalogue calculation that narrows one of the layers that
+can arise in future approaches to that problem.
+
+\section{The edge-deletion correspondence}
+
+For a $K_4$-free graph $G$, call a nonedge $uv$ \emph{addable} if $G+uv$
+is still $K_4$-free.  Let $a(G)$ denote the number of addable nonedges.  A
+\emph{valid one-edge deletion} of a Ramsey $(4,5)$ graph is an edge deletion
+whose result is still free of independent $5$-sets.
+
+\begin{lemma}[Edge-deletion correspondence]\label{lem:correspondence}
+A graph $G$ belongs to $\Xcal_{112}$ if and only if it is isomorphic to a
+valid one-edge deletion of a graph in $\Rcal(4,5,22,113)$.
+\end{lemma}
+
+\begin{proof}
+Suppose first that $G\in\Xcal_{112}$.  There is an addable nonedge $uv$.
+Adding an edge cannot create an independent set, so $G+uv$ has neither a
+$K_4$ nor an independent set of order $5$.  Thus
+$G+uv\in\Rcal(4,5,22,113)$.
+
+Conversely, let $H\in\Rcal(4,5,22,113)$ and suppose that $G=H-uv$ remains
+free of independent sets of order $5$.  Edge deletion cannot create a
+$K_4$, so $G\in\Rcal(4,5,22,112)$.  Restoring $uv$ gives the $K_4$-free
+graph $H$, hence $uv$ is addable and $G$ is not $K_4$-saturated.
+\end{proof}
+
+Lemma~\ref{lem:correspondence} reduces mathematical coverage of the
+nonsaturated sector to completeness of the $113$-edge input catalogue and
+exhaustive processing of its edges.  It does not assume that a child has a
+unique parent or a unique deleted edge; all duplication is removed after
+generation.
+
+\section{Exhaustive generation and verification}
+
+\subsection{Input and primary pipeline}
+
+The input is the complete public catalogue of $30{,}976$ nonisomorphic
+members of $\Rcal(4,5,22,113)$ described in
+\cite{angeltveit-mckay-2026,catalogue}.  Its graph6 file has hash
+\begin{center}
+\small\ttfamily
+1e1a54b719dcdebb57581ee6f3cd4e1721e828680a72128010f1f888a4dda9db.
+\end{center}
+Every input has $113$ edges, so deleting each edge gives
+$30{,}976\cdot113=3{,}500{,}288$ records.  A child automatically remains
+$K_4$-free.  We retain it precisely when its independence number is at most
+$4$, and then remove isomorphs.  Table~\ref{tab:pipeline} gives the exact
+counts.
+
+\begin{center}
+\refstepcounter{table}Table~\thetable: Primary edge-deletion census.\label{tab:pipeline}\par\smallskip
+\begin{tabular}{lr}
+\toprule
+Stage & Records \\
+\midrule
+Published $113$-edge inputs & $30{,}976$ \\
+All one-edge deletions & $3{,}500{,}288$ \\
+Deletions remaining in $\Rcal(4,5)$ & $887{,}138$ \\
+Nonisomorphic outputs & $785{,}888$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The primary implementation used \texttt{deledgeg}, \texttt{pickg}, and
+\texttt{shortg} from nauty and Traces version 2.9300
+\cite{mckay-1998,mckay-piperno-2014}.  In pseudocode:
+\begin{quote}
+\small
+for each $H$ in the $113$-edge catalogue:\\
+\hspace*{1em}for each $e\in E(H)$:\\
+\hspace*{2em}if $\alpha(H-e)\leq4$, output $H-e$;\\
+canonically label all outputs and retain one representative per class.
+\end{quote}
+
+\subsection{Cross-checks}
+
+Five checks address different failure modes.
+
+\begin{enumerate}[leftmargin=*]
+  \item A standalone C++20 program uses its own graph6 parser and encoder,
+  enumerates every source edge, and tests the independent-$5$ condition with
+  bitsets.  If $uv\in E(H)$, deleting $uv$ can create only an independent
+  $5$-set containing both $u$ and $v$; its other three vertices form an
+  independent triple among their common nonneighbours.  The program tests
+  this equivalent condition.  It emits exactly the same $887{,}138$ graph6
+  records as the primary filter, byte-for-byte.  Canonicalizing them
+  reproduces the primary $785{,}888$-record catalogue byte-for-byte.
+
+  \item Ordinary nauty canonicalization gives $785{,}888$ classes.
+  The distinct Traces algorithm gives the same count.  The two
+  conventions produce different byte strings, as expected, but applying
+  ordinary-nauty canonicalization to the Traces catalogue gives a file
+  byte-for-byte identical to the primary catalogue.
+
+  \item A separate Python program, using only the standard library, parses
+  every final graph6 record and verifies order $22$, edge count $112$, no
+  $K_4$, no independent $5$-set, and at least one addable nonedge.  This
+  check does not call nauty or Traces.
+
+  \item The final uncompressed catalogue has \sha{} hash
+  \begin{center}
+  \small\ttfamily
+  d2c556f52d13dd4d38ed955bedd3db5f52b883faafc45fe5561e611afa5cd6a2.
+  \end{center}
+  The deterministic gzip archive has hash
+  \begin{center}
+  \small\ttfamily
+  fcb0ef605eee3150d95d5b91535934ba9b711450a2edb7e55fd39a37ec3211d5.
+  \end{center}
+
+  \item As a one-level-up regression, deleting edges from all $133$ public
+  members of $\Rcal(4,5,22,114)$ gives $15{,}162$ records, of which $4{,}077$
+  remain Ramsey $(4,5)$ graphs.  Isomorphism rejection leaves $3{,}296$
+  classes, and every one occurs in the published $30{,}976$-member
+  $113$-edge catalogue.  The pinned $114$-edge input hash begins
+  \texttt{54dffec4ecab0f86}; its full value is in the manifest.
+\end{enumerate}
+
+The last check yields an additional exact split.
+
+\begin{corollary}\label{cor:e113split}
+Of the $30{,}976$ graphs in $\Rcal(4,5,22,113)$, exactly $3{,}296$ are not
+$K_4$-saturated and exactly $27{,}680$ are $K_4$-saturated.
+\end{corollary}
+
+\begin{proof}
+Apply Lemma~\ref{lem:correspondence} with edge counts $113$ and $114$, using
+the complete published $113$- and $114$-edge catalogues, and subtract from
+$30{,}976$.
+\end{proof}
+
+\begin{theorem}\label{thm:main}
+For the pinned inputs and computational methods described above, and
+conditional on completeness of the published catalogue
+$\Rcal(4,5,22,113)$,
+\[
+ |\Xcal_{112}|=785{,}888.
+\]
+\end{theorem}
+
+\begin{proof}
+Lemma~\ref{lem:correspondence} proves coverage by valid edge deletion.
+The two exhaustive deletion-and-filter computations produce $887{,}138$
+valid deletion records.  Canonical labeling produces $785{,}888$
+isomorphism classes.  The two canonical-labeling algorithms, bytewise
+catalogue comparisons, and direct property audit described above agree.
+\end{proof}
+
+\section{Structure of the nonsaturated sector}
+
+Table~\ref{tab:addable} gives the complete distribution of $a(G)$.  Most
+graphs have a unique addable nonedge, while five classes have five.
+
+\begin{center}
+\refstepcounter{table}Table~\thetable: Number of addable nonedges in $\Xcal_{112}$.\label{tab:addable}\par\smallskip
+\begin{tabular}{crrrrr}
+\toprule
+$a(G)$ & 1 & 2 & 3 & 4 & 5 \\
+\midrule
+Number of classes & $695{,}535$ & $86{,}374$ & $3{,}868$ & $106$ & $5$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The minimum- and maximum-degree distributions are shown in
+Table~\ref{tab:degrees}.  There are $195$ distinct degree sequences.
+
+\begin{center}
+\refstepcounter{table}Table~\thetable: Degree extremes in $\Xcal_{112}$.\label{tab:degrees}\par\smallskip
+\begin{tabular}{cr|cr}
+\toprule
+$\delta(G)$ & Classes & $\Delta(G)$ & Classes \\
+\midrule
+7  & $1{,}358$   & 11 & $537{,}683$ \\
+8  & $153{,}109$ & 12 & $244{,}316$ \\
+9  & $625{,}807$ & 13 & $3{,}889$ \\
+10 & $5{,}614$   &    &             \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Almost all representatives are asymmetric: $783{,}907$ have automorphism
+group order $1$, $1{,}911$ have order $2$, and $70$ have order $4$.  Their
+triangle counts range from $126$ to $143$; the complete triangle and degree
+sequence distributions are included in the machine-readable manifests.
+
+\section{Minimum degree in the full $112$-edge layer}
+
+The degree conclusion suggested by Table~\ref{tab:degrees} extends to the
+unknown saturated residue.
+
+\begin{lemma}[One-vertex extension criterion]\label{lem:extension}
+Let $H\in\Rcal(4,5,21)$ and let $S\subseteq V(H)$.  Add a new vertex $v$
+with $N(v)=S$.  The resulting graph is in $\Rcal(4,5,22)$ if and only if
+\begin{enumerate}[label=(\roman*),itemsep=1pt]
+  \item $H[S]$ is triangle-free, and
+  \item $S$ meets every independent $4$-set of $H$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+Any newly created $K_4$ must contain $v$, and its other three vertices form
+a triangle in $H[S]$.  Any newly created independent $5$-set must contain
+$v$, and its other four vertices form an independent set disjoint from $S$.
+These are the only new forbidden subgraphs.
+\end{proof}
+
+\begin{theorem}\label{thm:mindegree}
+Conditional on completeness of the published $106$- and $107$-edge
+order-$21$ catalogues, every $G\in\Rcal(4,5,22,112)$ satisfies
+\[
+ 7\leq\delta(G)\leq10.
+\]
+\end{theorem}
+
+\begin{proof}
+Let $v$ be a minimum-degree vertex and put $d=d(v)$.  Then
+$G-v\in\Rcal(4,5,21,112-d)$.  The published exact maximum edge count
+$E(4,5,21)=107$ \cite{angeltveit-mckay-2026,catalogue} gives $d\geq5$,
+while the average degree $224/22<11$ gives $d\leq10$.
+
+For $d=5$, the seed $G-v$ must be one of the $31$ public members of
+$\Rcal(4,5,21,107)$.  We tested all
+$31\binom{21}{5}=630{,}819$ possible neighbourhoods using
+Lemma~\ref{lem:extension}; none meets every independent $4$-set.
+
+For $d=6$, the seed must be one of the $10{,}188$ public members of
+$\Rcal(4,5,21,106)$.  Direct subset enumeration tests
+$10{,}188\binom{21}{6}=552{,}841{,}632$ neighbourhoods.  Exactly $443$
+meet every independent $4$-set, and each of the $443$ contains a triangle.
+Thus neither $d=5$ nor $d=6$ is possible.
+
+A structurally different program treats the independent
+$4$-sets as a hypergraph and performs triangle-pruned transversal search.
+It visits $22{,}335{,}989$ search states over both layers and also finds no
+valid neighbourhood.  The Python verifier pins catalogue hashes and record
+counts; both implementations check the relevant edge counts and Ramsey
+constraints before extension, and the Python verifier also checks order
+explicitly.
+\end{proof}
+
+\section{The saturated residue at 112 edges is nonempty}
+
+Theorem~\ref{thm:main} is not a census of the full $112$-edge layer.
+To make this distinction constructive, we encoded the saturated residue as
+SAT.  There are $\binom{22}{2}=231$ edge variables.  The base formula has
+one negative six-literal clause for each $4$-set, one positive ten-literal
+clause for each $5$-set, and a sequential counter \cite{sinz-2005} fixing
+exactly $112$ edges.  For each potential nonedge $uv$, auxiliary witnesses require that
+some adjacent pair $xy$ lies in $N(u)\cap N(v)$; then adding $uv$ creates the
+$K_4$ on $\{u,v,x,y\}$.
+
+The deterministic DIMACS instance has $69{,}992$ variables and $356{,}482$
+clauses, with hash
+\begin{center}
+\small\ttfamily
+e65db47cc9bc70924b6ea7550cc93d8b8370bffc32b16c4275ca7d5b9d70297f.
+\end{center}
+Kissat 4.0.4, invoked through PySAT 1.9.dev15
+\cite{kissat-2020,pysat-2018}, found a model.  Ordinary nauty and Traces
+canonicalize that solver-produced witness; ordinary nauty gives the graph6
+record
+\begin{verbatim}
+U?owqT_T@EelPxeXTiU\goB}QztebfjO\yxgJmq_
+\end{verbatim}
+It has degree sequence $(11^9,10^9,9^3,8)$, clique number $3$, independence
+number $4$, and is $K_4$-saturated.  A direct combinatorial audit and a
+separately implemented bit-parallel audit agree on all properties.  The
+canonical record, including its terminating newline, has hash
+\begin{center}
+\small\ttfamily
+9f94ad40db08993931c1b798b16e2601afbea7530f2122a0ff6b08a45e017ca4.
+\end{center}
+
+\begin{corollary}
+$|\Rcal(4,5,22,112)|\geq785{,}889$.
+\end{corollary}
+
+\section{Reproducibility and trusted boundary}
+
+The recorded run used macOS on Apple silicon, Python 3.13.1, Apple clang
+17.0.0 in C++20 mode, nauty and Traces 2.9300, PySAT 1.9.dev15, and Kissat
+4.0.4.  Machine-readable manifests record timings as scale indicators, not
+as performance comparisons.
+
+The prepared reproduction release contains:
+\begin{itemize}[leftmargin=*,itemsep=1pt]
+  \item pinned source-catalogue hashes and the final graph6 catalogue;
+  \item primary and separately implemented deletion/filter programs, scripts
+  for nauty/Traces canonicalization, and bytewise comparisons;
+  \item two structurally different minimum-degree extension implementations;
+  \item the deterministic saturated-residue CNF and audited witness;
+  \item JSON manifests containing counts, distributions, versions, hashes,
+  and validation outcomes; and
+  \item unit tests, including exhaustive small-instance tests of the
+  cardinality encoder when the pinned optional SAT dependency is installed.
+\end{itemize}
+
+The exact class count has an explicit trusted boundary.  We rely on the
+published completeness of the input catalogues, our graph6 parsers and
+encoders, exhaustive iteration in two deletion/filter implementations, and
+canonical labeling by nauty and Traces.  Agreement of the separate coverage
+programs and two canonical-labeling algorithms, followed by byte-identical
+recanonicalization, is a strong error check but not a formal verification of
+those programs.  The final standard-library graph-property audit calls
+neither graph-isomorphism library.  Pinned input hashes, generated manifests,
+and scripts make every numerical claim here reproducible, except for the
+externally established completeness of the source catalogues.
+
+\section{Discussion and the remaining census}
+
+The unknown part of $\Rcal(4,5,22,112)$ consists exactly of its
+$K_4$-saturated members, and the witness above proves that it is nonempty.
+Two exhaustive continuations are available.
+
+First, choose a maximum-degree root.  The average degree and
+$R(3,5)=14$ \cite{radziszowski-survey} force
+$11\leq\Delta(G)\leq13$.  The root neighbourhood belongs to
+$\Rcal(3,5,d)$ and its nonneighbours induce a graph in
+$\Rcal(4,4,21-d)$.  Complete public seed catalogues then give a finite gluing
+problem with mixed $K_4$ and independent-$5$ constraints.
+
+Second, the saturated DIMACS formula can be enumerated with SAT Modulo
+Symmetries.  A publication-grade coverage claim would retain the labelled
+models, independently validate them, verify the symmetry clauses, add a
+blocker for each output, and check a final proof-producing UNSAT run.  We do
+not report such a census here.
+
+The present calculation is therefore both exact and deliberately limited:
+it completes the entire non-$K_4$-saturated sector, proves a degree restriction
+for the full layer, and exposes the saturated residue as the sole missing
+class.  It does not by itself improve $R(5,5)\leq46$.
+
+\section*{Data and code availability}
+
+The code, curated source-and-manifest archive, and reproducibility records are
+available at \url{https://github.com/AyushAg1002/r45-census112}.  The
+derived catalogue is stored separately as a deterministic gzip archive of
+approximately $20$ MB.  The versioned release is archived at Zenodo,
+\href{https://doi.org/10.5281/zenodo.22057247}{doi:10.5281/zenodo.22057247}.
+Original code is released under the MIT
+License, the manuscript and documentation under CC BY 4.0, and the derived
+catalogue and original manifests under CC0 1.0.  The release does not
+redistribute the third-party input catalogues; a download script retrieves
+them from their public source and verifies their hashes.
+
+\section*{Acknowledgements and computational assistance}
+
+OpenAI Codex was used for code development, running computations,
+literature triage, and manuscript drafting.  The author has reviewed the
+mathematical arguments, code, computations, citations, and reported artifacts,
+takes responsibility for the work, and approves this disclosure.  This
+disclosure and the public release were approved by the author.
+
+\begin{thebibliography}{99}
+\setlength{\itemsep}{3pt}
+
+\bibitem{angeltveit-mckay-2026}
+V.~Angeltveit and B.~D.~McKay,
+\newblock $R(5,5)\leq46$,
+\newblock \emph{Journal of Graph Theory} \textbf{112}(3) (2026), 198--208,
+\newblock \href{https://doi.org/10.1002/jgt.70029}{doi:10.1002/jgt.70029};
+\href{https://arxiv.org/abs/2409.15709}{arXiv:2409.15709}.
+
+\bibitem{catalogue}
+B.~D.~McKay,
+\newblock Ramsey graph catalogues,
+\newblock \url{https://users.cecs.anu.edu.au/~bdm/data/ramsey.html},
+accessed August 22, 2026.
+
+\bibitem{mckay-radziszowski-1995}
+B.~D.~McKay and S.~P.~Radziszowski,
+\newblock $R(4,5)=25$,
+\newblock \emph{Journal of Graph Theory} \textbf{19} (1995), 309--322,
+\newblock \href{https://doi.org/10.1002/jgt.3190190304}{doi:10.1002/jgt.3190190304}.
+
+\bibitem{mckay-1998}
+B.~D.~McKay,
+\newblock Isomorph-free exhaustive generation,
+\newblock \emph{Journal of Algorithms} \textbf{26} (1998), 306--324,
+\newblock \href{https://doi.org/10.1006/jagm.1997.0898}{doi:10.1006/jagm.1997.0898}.
+
+\bibitem{mckay-piperno-2014}
+B.~D.~McKay and A.~Piperno,
+\newblock Practical graph isomorphism, II,
+\newblock \emph{Journal of Symbolic Computation} \textbf{60} (2014),
+94--112,
+\newblock \href{https://doi.org/10.1016/j.jsc.2013.09.003}{doi:10.1016/j.jsc.2013.09.003}.
+
+\bibitem{radziszowski-survey}
+S.~P.~Radziszowski,
+\newblock Small Ramsey numbers,
+\newblock \emph{Electronic Journal of Combinatorics}, Dynamic Survey 1,
+revision 18 (2026),
+\newblock \href{https://doi.org/10.37236/21}{doi:10.37236/21}.
+
+\bibitem{sinz-2005}
+C.~Sinz,
+\newblock Towards an optimal CNF encoding of Boolean cardinality constraints,
+\newblock in \emph{Principles and Practice of Constraint Programming---CP
+2005}, LNCS 3709, Springer (2005), 827--831,
+\newblock \href{https://doi.org/10.1007/11564751_73}{doi:10.1007/11564751\_73}.
+
+\bibitem{kissat-2020}
+A.~Biere, K.~Fazekas, M.~Fleury, and M.~Heisinger,
+\newblock CaDiCaL, Kissat, Paracooba, Plingeling and Treengeling entering the
+SAT Competition 2020,
+\newblock in \emph{SAT Competition 2020: Solver and Benchmark Descriptions}
+(2020), 50--53.
+
+\bibitem{pysat-2018}
+A.~Ignatiev, A.~Morgado, and J.~Marques-Silva,
+\newblock PySAT: a Python toolkit for prototyping with SAT oracles,
+\newblock in \emph{Theory and Applications of Satisfiability Testing---SAT
+2018}, LNCS 10929, Springer (2018), 428--437,
+\newblock \href{https://doi.org/10.1007/978-3-319-94144-8_26}{doi:10.1007/978-3-319-94144-8\_26}.
+
+\end{thebibliography}
+
+\end{document}
