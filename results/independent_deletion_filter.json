@@ -1,0 +1,42 @@
+{
+  "implementation": "standalone C++20; no nauty/Traces code or library",
+  "compiler": {
+    "id": "Clang",
+    "version": "17.0.0 (clang-1700.0.13.3)",
+    "cplusplus": 202002
+  },
+  "input": "data/r45extreme/r4522.113.g6",
+  "input_records": 30976,
+  "input_order": 22,
+  "input_edges_per_graph": 113,
+  "all_inputs_k4_free": true,
+  "all_inputs_independent5_free": true,
+  "all_edge_deletions": 3500288,
+  "valid_deletions": 887138,
+  "output": "data/r4522.112.deletions.independent.valid.g6",
+  "filter": "independent-triple search in the deleted edge's common non-neighbourhood",
+  "elapsed_seconds": 0.954814,
+  "source_sha256": "1e1a54b719dcdebb57581ee6f3cd4e1721e828680a72128010f1f888a4dda9db",
+  "independent_valid_output": {
+    "file": "data/r4522.112.deletions.independent.valid.g6",
+    "records": 887138,
+    "sha256": "0f35a09c6f6f6d91b5e115144809ab70aecb57a3bddd54e1c8053fff9ca70d28"
+  },
+  "comparison_to_primary_valid_stream": {
+    "file": "data/r4522.112.deletions.valid.g6",
+    "sha256": "0f35a09c6f6f6d91b5e115144809ab70aecb57a3bddd54e1c8053fff9ca70d28",
+    "byte_identical": true
+  },
+  "canonicalization": {
+    "separate_from_generation_and_filter": true,
+    "tool": "nauty 2.9.3 shortg",
+    "executable": "third_party/nauty2_9_3/shortg",
+    "executable_sha256": "36b6ea897780d502a888fb2e3d963ee624af63b93f8267b6b0dbd822e76de54c",
+    "output": "data/r4522.112.nonsaturated.independent.g6",
+    "records": 785888,
+    "sha256": "d2c556f52d13dd4d38ed955bedd3db5f52b883faafc45fe5561e611afa5cd6a2",
+    "reference": "data/r4522.112.nonsaturated.g6",
+    "reference_sha256": "d2c556f52d13dd4d38ed955bedd3db5f52b883faafc45fe5561e611afa5cd6a2",
+    "byte_identical_to_reference": true
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "cnf": {
+    "path": "data/r4522.112.saturated.cnf",
+    "sha256": "e65db47cc9bc70924b6ea7550cc93d8b8370bffc32b16c4275ca7d5b9d70297f"
+  },
+  "formula": {
+    "clauses": 356482,
+    "counter_aux_variables": 25871,
+    "edge_variables": 231,
+    "exact_edge_clauses": 103152,
+    "independent5_clauses": 26334,
+    "k4_clauses": 7315,
+    "saturation_clauses": 219681,
+    "saturation_witness_variables": 43890,
+    "target_edges": 112,
+    "variables": 69992,
+    "vertices": 22
+  }
+}

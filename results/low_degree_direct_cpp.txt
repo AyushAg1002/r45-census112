@@ -1,0 +1,2 @@
+records=31 subsets=630819 extensions=0 rejected_i4=630819 rejected_triangle=0 rejected_degree=0 total_i4=1825 total_triangles=4160 seconds=0.00391171
+records=10188 subsets=552841632 extensions=0 rejected_i4=552841189 rejected_triangle=443 rejected_degree=0 total_i4=649572 total_triangles=1314235 seconds=3.67315

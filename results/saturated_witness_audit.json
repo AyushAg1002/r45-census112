@@ -1,0 +1,43 @@
+{
+  "audit": {
+    "degree_sequence": [
+      11,
+      11,
+      11,
+      11,
+      11,
+      11,
+      11,
+      11,
+      11,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      10,
+      9,
+      9,
+      9,
+      8
+    ],
+    "edges": 112,
+    "independent5_free": true,
+    "k4_free": true,
+    "k4_saturated": true,
+    "valid": true,
+    "vertices": 22
+  },
+  "environment": {
+    "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+    "python": "3.13.1"
+  },
+  "witness": {
+    "graph6": "U\\zPsPfxsLQ[[BQrsLParVOfWyOxJ_[{sFRmEgBg",
+    "path": "data/r4522.112.saturated.witness.g6",
+    "sha256": "aafad0f023aeed590eeb5c413ce20d5e4535f79ca13d5c22d919110010fecdbd"
+  }
+}

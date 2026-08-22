@@ -1,0 +1,56 @@
+{
+  "claims": {
+    "full_layer_minimum_degree_lower_bound": 7,
+    "full_saturated_census_complete": false,
+    "nonsaturated_classes": 785888,
+    "saturated_witness_valid": true
+  },
+  "code_sha256": {
+    "Makefile": "517d70e486092cc81e9588cc192574850a1919ad5a2d408abdb8292c44c76771",
+    "scripts/build_release_candidate.py": "270d73745f5d24535e042e397bfd054a4585e4e8beb79d4d512a902ef55c5a6d",
+    "scripts/fetch_inputs.sh": "8dc7bcd57ab5456e3275855863d7574eee05e3d37d9bf93bc53ff5bb91a2e408",
+    "scripts/finalize_independent_manifest.py": "da710c4b8fbf25f343ee0c30157aa8e2e02401b82abfc6e9cb684c554d4c01fd",
+    "scripts/finalize_nonsaturated_manifest.py": "6b43793ad0ec924c95614b23938096d13bd6f3bcc0feb53ae61e52dd02a154cf",
+    "scripts/finalize_reproduction_summary.py": "1f31c9c6cad497901c703b2e941a8b1dd1de5593d95d4540f30ec63b172c13ff",
+    "scripts/reproduce_all.sh": "8184add62bb546e468abea7e159c950462cddb4b3909457d6054b4c856a05957",
+    "scripts/reproduce_independent_deletion.sh": "a34f3ef97af4b4114a7de9c41a82984dd20856b5fe0e6aaa025e531011a3ec6c",
+    "scripts/reproduce_low_degree.sh": "de6181139df3fd7da7114bd65ec4f08e359f2b72d12f5385ff81995ba3fa3e4c",
+    "scripts/reproduce_nonsaturated.sh": "abb9b7d343d49afbae7830a33d75858e2a101cb02f2b33a09abfa3968ec4a275",
+    "scripts/reproduce_saturated_witness.sh": "8952ffafbd93fb32aceeec80f009f900e1ed8e64d1082e072337b8d7965755bb",
+    "src/extend_from_min_vertex.cpp": "6f03975d583e07e35ff24e8735966b474192df007a3d87503286e9bff90e6e93",
+    "src/independent_delete_filter.cpp": "4efac5f28edd1e3a97db7f685b6cd66b51846ab8b341c7e648d82baeeecec887",
+    "src/prepare_sms_coverage.py": "be66b543ffc9a6ff058ac4bdac777fabee062eb2fe3f13ce15c76337d0a37bf1",
+    "src/saturated_cnf.py": "3d7db31e16ee478a73a8a0111e92bb61aa17777e33fc362440af235a8dc78e34",
+    "tests/test_extension.sh": "423366c603ace7c51e2277d453e8fdd7eab22de0d763cf311f824c66fd858014",
+    "tests/test_prepare_sms_coverage.py": "10c2ddca22be021de98cd29ca5d20bac83b9dc9b007899bae52ce621741a760f",
+    "tests/test_saturated_cnf.py": "afe9e56302453999adf4d50168f6bf6ece92ca513e41ecdd0487ea83f4dc5393",
+    "verify_low_degree.py": "544d244f0464d8fd0b082b0dd01423db2b5d4e84b770e2517ce61589ed75968c",
+    "verify_nonsaturated.py": "4f8d311a0169a8a742f57d6305e2918ca44d75af1f4dab8597d224ce31640cee"
+  },
+  "completed_utc": "2026-08-22T12:09:41.600208+00:00",
+  "environment": {
+    "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+    "pysat": "1.9.dev15",
+    "python": "3.13.1 (v3.13.1:06714517797, Dec  3 2024, 14:00:22) [Clang 15.0.0 (clang-1500.3.9.4)]"
+  },
+  "external_trusted_boundary": "completeness of the published Ramsey input catalogues",
+  "principal_artifact_sha256": {
+    "data/r4522.112.nonsaturated.g6": "d2c556f52d13dd4d38ed955bedd3db5f52b883faafc45fe5561e611afa5cd6a2",
+    "data/r4522.112.nonsaturated.g6.gz": "fcb0ef605eee3150d95d5b91535934ba9b711450a2edb7e55fd39a37ec3211d5",
+    "data/r4522.112.saturated.cnf": "e65db47cc9bc70924b6ea7550cc93d8b8370bffc32b16c4275ca7d5b9d70297f",
+    "data/r4522.112.saturated.witness.canonical.g6": "9f94ad40db08993931c1b798b16e2601afbea7530f2122a0ff6b08a45e017ca4"
+  },
+  "result_sha256": {
+    "results/independent_deletion_filter.json": "5cc8f5fbc5d2b6c7c7c3d2289e7ca3468a6874f3b7eef8d477c4b7b9396dcea7",
+    "results/low_degree_direct_cpp.txt": "6f8d74ff4dfccfbb971948e7ef2a34d0fcdddbefd743af9695a37e88ead4abba",
+    "results/low_degree_transversal.json": "0dd8c57943ec2a805a0cec327bde9c029a20b1f204a8eab3445e3828ff6d5876",
+    "results/nonsaturated_automorphism_counts.txt": "ac7c69aaabd3178a1f98658835878dc02c48e3643a4effcc57585f1af26a1ce3",
+    "results/nonsaturated_manifest.json": "f30411203327a2c892f558c2192384a6a02601f22210536479b7bd4d3b91e702",
+    "results/nonsaturated_validation.json": "43aa29821396c42f00ea56b90454e180a3d20df13caf1887b577de1348b73910",
+    "results/saturated_cnf_manifest.json": "c553dd4f34496e91b1348fe4959ebcd2a7f5cb5280df030f23e46415439c4eda",
+    "results/saturated_witness.json": "0c9380468a2701d0071877f288fc65cce063a3a3b8dd4fa8fbedb6b68ca7475e",
+    "results/saturated_witness_audit.json": "54f4ef055bba2476e031eefd220aa37d1e622429c32268a6e8c6034fc851395f",
+    "results/saturated_witness_bitparallel_audit.json": "48af69774082d0994574c82a2ac62718304016de176b1df5583e05e88531ed16",
+    "results/saturated_witness_canonical_audit.json": "a892f298d276bec1ab39fbe61227a238e6373fc1faa58060203081e1972cdc18"
+  }
+}
